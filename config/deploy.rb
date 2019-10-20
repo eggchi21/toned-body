@@ -27,7 +27,7 @@ namespace :deploy do
   task :restart do
     invoke 'unicorn:restart'
   end
-end
+
 
 desc 'upload master.key'
 task :upload do
