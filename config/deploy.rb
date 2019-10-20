@@ -1,8 +1,8 @@
 # config valid for current version and patch releases of Capistrano
-lock "~> 3.11.1"
+lock "3.11.1"
 
 set :application, "toned-body"
-set :repo_url, "git@github.com/eggchi21/toned-body.git"
+set :repo_url, "git@github.com:eggchi21/toned-body.git"
 
 # バージョンが変わっても共通で参照するディレクトリを指定
 set :linked_dirs, fetch(:linked_dirs, []).push('log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'vendor/bundle', 'public/system', 'public/uploads')
