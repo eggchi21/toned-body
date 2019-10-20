@@ -1,5 +1,5 @@
 # config valid for current version and patch releases of Capistrano
-lock "3.11.1"
+lock "~> 3.11.1"
 
 set :application, "toned-body"
 set :repo_url, "git@github.com:eggchi21/toned-body.git"
@@ -29,6 +29,26 @@ namespace :deploy do
   end
 end
 
+desc 'upload master.key'
+task :upload do
+  on roles(:app) do |host|
+    if test "[ ! -d #{shared_path}/config ]"
+      execute "mkdir -p #{shared_path}/config"
+    end
+    upload!('config/master.key', "#{shared_path}/config/master.key")
+  end
+end
+before :starting, 'deploy:upload'
+after :finishing, 'deploy:cleanup'
+end
+
+# 必要に応じて/環境変数をcapistranoでの自動デプロイで利用
+set :default_env, {
+  rbenv_root: "/usr/local/rbenv",
+  path: "/usr/local/rbenv/shims:/usr/local/rbenv/bin:$PATH",
+  AWS_ACCESS_KEY_ID: ENV["AWS_ACCESS_KEY_ID"],
+  AWS_SECRET_ACCESS_KEY: ENV["AWS_SECRET_ACCESS_KEY"]
+}
 # Default branch is :master
 # ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
 
