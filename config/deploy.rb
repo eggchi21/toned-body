@@ -21,25 +21,25 @@ set :unicorn_pid, -> { "#{shared_path}/tmp/pids/unicorn.pid" }
 set :unicorn_config_path, -> { "#{current_path}/config/unicorn.rb" }
 set :keep_releases, 5
 
-# デプロイ処理が終わった後、Unicornを再起動するための記述
 after 'deploy:publishing', 'deploy:restart'
 namespace :deploy do
   task :restart do
     invoke 'unicorn:restart'
   end
 
-
-desc 'upload master.key'
-task :upload do
-  on roles(:app) do |host|
-    if test "[ ! -d #{shared_path}/config ]"
-      execute "mkdir -p #{shared_path}/config"
+  desc 'upload master.key'
+  task :upload do
+    on roles(:app) do |host|
+      if test "[ ! -d #{shared_path}/config ]"
+        execute "mkdir -p #{shared_path}/config"
+      end
+      upload!('config/master.key', "#{shared_path}/config/master.key")
     end
-    upload!('config/master.key', "#{shared_path}/config/master.key")
   end
-end
-before :starting, 'deploy:upload'
-after :finishing, 'deploy:cleanup'
+#excuteの例外処理が書かれているので「もしshared/config/master.keyファイル無ければ作るよ」って書いてるのですが、作られないのが原因だったのかな？
+#先ほどの手順で本番環境下にmaster.keyファイルを作成したのでローカルのmaster.keyファイル内の記述はuploadされるはず
+  before :starting, 'deploy:upload'
+  after :finishing, 'deploy:cleanup'
 end
 
 # 必要に応じて/環境変数をcapistranoでの自動デプロイで利用
